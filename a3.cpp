@@ -6,7 +6,7 @@ int getIdx(char ch){
 }
 
 Trie::Trie(const std::string wordList[],int sz){
-
+  
 }
 
 void Trie::addWord(const std::string& newWord){

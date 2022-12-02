@@ -2,6 +2,16 @@
 using namespace std;
 
 class Trie{
+	
+	
+	struct TriNode{
+
+		char* letter = '';
+		TriNode* next;
+		TriNode* prev;
+	}
+
+	TriNode alphabet[25] = {};
 
 public:
 	Trie(const std::string wordList[],int sz);
