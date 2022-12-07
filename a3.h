@@ -1,14 +1,13 @@
 #include <string>
 #include <cstring>
 
-#define ALPHABET 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
 
 using namespace std;
 
 class Trie{
 
     struct TrieNode{
-        string _ltr; // Storing for printing purposes only
+        string _ltr;
         TrieNode* _children[26];
         bool _terminal;
 
