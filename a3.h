@@ -1,5 +1,6 @@
 #include <string>
 #include <cstring>
+#include <iostream>
 
 
 using namespace std;
@@ -7,19 +8,22 @@ using namespace std;
 class Trie{
 
     struct TrieNode{
-        string _ltr;
+        char _ltr;
         TrieNode* _children[26];
+        TrieNode* _parent;
         bool _terminal;
+        bool _suggested;
 
-        TrieNode(){};
-        TrieNode operator = (TrieNode *rhs) {
-            TrieNode tn;
-            tn._ltr = rhs->_ltr;
+        TrieNode(TrieNode* parent){
+            _parent = parent;
+        };
+        TrieNode& operator = (const TrieNode& rhs) {
+            _ltr = rhs._ltr;
             for (int i = 0; i < 26; i++){
-                tn._children[i] = rhs->_children[i];
+                _children[i] = rhs._children[i];
             }
-            tn._terminal = rhs->_terminal;
-            return tn;
+            _terminal = rhs._terminal;
+            return *this;
         }
 
 	};
@@ -33,11 +37,7 @@ public:
 	bool lookup(const std::string& word) const;
 	int beginsWith(const std::string& prefix, std::string resultList[]) const;
 
-    string returnLetter(int i){
-        return root[i]->_ltr;
-    }
-
-    TrieNode* addTrieNode(const string ltr);
-
+    TrieNode* addTrieNode(const char ltr, TrieNode* parent);
+    void remove(TrieNode *node);
 	~Trie();	
 };

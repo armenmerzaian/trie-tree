@@ -3,23 +3,21 @@
 
 
 int getIdx(char ch){
-  return ch -'a';
+    return ch -'a';
 }
 
-Trie::Trie(){
-    string alphabet[] = {"a", "b", "c", "d", "e",
-                        "f", "g", "h", "i", "j",
-                        "k", "l", "m", "n", "o",
-                        "p", "q", "r", "s", "t",
-                        "u", "v", "w", "x", "y",
-                        "z"};
-    int j = 0;
-    for(auto& i : root){
-        i = addTrieNode(alphabet[j++]);
-    }
-}
+Trie::Trie(){}
 
 Trie::Trie(const std::string wordList[],int sz){
+
+    const string alphabet = "abcdefghijklmnopqrstuvwxyz";
+    int j = 0;
+    for (auto &i : root)
+    {
+        i = addTrieNode(alphabet[j], *root);
+        j++;
+    }
+
     for(int i = 0; i < sz; i++){
         string currWord = wordList[i];
         int index = getIdx(currWord[0]);
@@ -28,17 +26,11 @@ Trie::Trie(const std::string wordList[],int sz){
         for (int j=1; j < currWord.length(); j++) {
             int idx = getIdx(currWord[j]);
             if (temp->_children[idx] == nullptr) {
-                temp->_children[idx] = addTrieNode(to_string(currWord[j]));
+                temp->_children[idx] = addTrieNode(currWord[j], temp);
             }
-            // Go down a level, to the child referenced by idx
-            // since we have a prefix match
-            if(j != currWord.length() - 1){
-                temp = temp->_children[idx];
-            }
+            temp = temp->_children[idx];
         }
-        // At the end of the word, mark this node as the leaf node
         temp->_terminal = true;
-        //return root;
     }
 }
 
@@ -47,17 +39,15 @@ Trie::Trie(const std::string wordList[],int sz){
 void Trie::addWord(const std::string& newWord){
     int index = getIdx(newWord[0]);
     TrieNode* temp = this->root[index];
-    if(temp->_ltr == ""){
-        temp = addTrieNode(to_string(newWord[0]));
+    if(!temp->_ltr){
+        temp = addTrieNode(newWord[0], temp);
     }
     for (int i=1; i < newWord.length(); i++) {
         int idx = getIdx(newWord[i]);
         if (temp->_children[idx] == nullptr) {
-            temp->_children[idx] = addTrieNode(to_string(newWord[i]));
+            temp->_children[idx] = addTrieNode(newWord[i], temp);
         }
-        if(i != newWord.length() - 1){
-            temp = temp->_children[idx];
-        }
+        temp = temp->_children[idx];
     }
     temp->_terminal = true;
 }
@@ -66,7 +56,7 @@ bool Trie::lookup(const std::string& word) const{
     // Searches for word in the Trie
     int index = getIdx(word[0]);
     TrieNode* temp = this->root[index];
-    if(temp->_ltr.empty()){
+    if(!temp->_ltr){
         return false;
     }
     for(int i=1; i < word.size(); i++)
@@ -75,9 +65,7 @@ bool Trie::lookup(const std::string& word) const{
         if (temp->_children[idx] == nullptr) {
             return false;
         }
-        if(i != word.size() - 1){
-            temp = temp->_children[idx];
-        }
+        temp = temp->_children[idx];
     }
     if (temp->_terminal){
         return true;
@@ -88,42 +76,105 @@ bool Trie::lookup(const std::string& word) const{
 int Trie::beginsWith(const std::string& prefix, std::string resultList[]) const{
     int index = getIdx(prefix[0]);
 
-    TrieNode* temp = this->root[index];
-    if(temp->_ltr.empty() ){
-        return 0;
-    }
+    TrieNode* pfxNode = this->root[index];
     for(int i=1; i < prefix.size(); i++)
     {
         int idx = getIdx(prefix[i]);
-        if (temp->_children[idx] == nullptr) {
+        if (pfxNode->_children[idx] == nullptr) {
             return 0;
         }
-        if(i != prefix.size() - 1){
-            temp = temp->_children[idx];
-        }
+        pfxNode = pfxNode->_children[idx];
     }
-    if(temp->_terminal){
-        TrieNode* prefixTrie;
-        for(auto& a : temp->_children){
-            for(int j = 0; j < 26; j++){
-                if(a->_children[j] != nullptr){
+    string suggest;
+    int result = 0;
+    TrieNode *node;
 
+    if(pfxNode->_terminal){
+        resultList[result++] = prefix;
+    }
+
+    for (int i = 0; i < 26; i++) {
+        node = pfxNode->_children[i];
+        int j = 0;
+
+        if(node != nullptr){
+            suggest = prefix;
+        }
+
+        while(node != nullptr){
+            if(node->_children[j] != nullptr){
+                suggest += node->_ltr;
+                if(node->_terminal){
+                    resultList[result++] = suggest;
+                    node->_suggested = true;
                 }
+                node = node->_children[j];
+                j = 0;
+            } else if (j == 25){
+                if(node->_terminal) {
+                    if(node->_suggested){
+                        node->_suggested = false;
+                        if(node != pfxNode->_children[i]) {
+                            j = (getIdx(node->_ltr)) + 1;
+                            node = node->_parent;
+                            suggest = prefix;
+                        } else {
+                            break;
+                        }
+                    } else {
+                        suggest += node->_ltr;
+                        resultList[result++] = suggest;
+                        node->_suggested = true;
+                    }
+                } else if(node != pfxNode->_children[i]) {
+                    j = (getIdx(node->_ltr)) + 1;
+                    node = node->_parent;
+                    suggest = prefix;
+                } else {
+                    break;
+                }
+            } else {
+                j++;
             }
         }
+
+    }
+    return result;
+}
+
+void Trie::remove(TrieNode *tn)
+{
+    if (tn){
+        bool hasChildren = false;
+        for (int i = 0; i < 26; ++i){
+            if (tn->_children[i]){
+                hasChildren = true;
+            }
+        }
+        if (!hasChildren){
+            delete tn;
+            return;
+        }
+        for (int i = 0; i < 26; i++){
+            remove(tn->_children[i]);
+        }
     }
 }
 
-Trie::~Trie(){
-
+Trie::~Trie()
+{
+    for (int i = 0; i < 26; ++i){
+        remove(root[i]);
+    }
 }
 
-Trie::TrieNode *Trie::addTrieNode(const string ltr) {
-    TrieNode* tn = new TrieNode();
+Trie::TrieNode *Trie::addTrieNode(const char ltr, TrieNode* parent) {
+    TrieNode* tn = new TrieNode(parent);
     for (auto& i : tn->_children) {
         i = nullptr;
     }
     tn->_terminal = false;
     tn->_ltr = ltr;
+    tn->_suggested = false;
     return tn;
 }
