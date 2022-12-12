@@ -37,7 +37,8 @@ public:
 	bool lookup(const std::string& word) const;
 	int beginsWith(const std::string& prefix, std::string resultList[]) const;
 
-    TrieNode* addTrieNode(const char ltr, TrieNode* parent);
+    void searchHelper(const std::string& prefix, std::string resultList[], int& counter, TrieNode* tempNode) const;
+    static TrieNode* addTrieNode(char ltr, TrieNode* parent);
     void remove(TrieNode *node);
 	~Trie();	
 };

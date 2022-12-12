@@ -277,21 +277,16 @@ bool test5(std::string key[], int max, std::string& error){
             return false;
         }
 
-        //
-        for(auto& a : suggestList){
-            cout << a << endl;
-        }
-        //
         bool isSame=true;
         for(int j=0;isSame && j<result;j++){
             if(suggestList[j] != correctSuggestions[i][j]){
                 isSame=false;
             }
         }
-        /*if(!isSame){
+        if(!isSame){
             error="Error 5b: list of words with given prefix was not correct.";
             return false;
-        }*/
+        }
     }
 
     return true;
