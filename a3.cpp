@@ -1,14 +1,13 @@
 #include "a3.h"
-#include <string>
 
 
-int getIdx(char ch){
+int getIdx(char ch) {
     return ch -'a';
 }
 
 Trie::Trie(){}
 
-Trie::Trie(const std::string wordList[],int sz){
+Trie::Trie(const std::string wordList[],int sz) {
 
     const string alphabet = "abcdefghijklmnopqrstuvwxyz";
     int j = 0;
@@ -25,7 +24,7 @@ Trie::Trie(const std::string wordList[],int sz){
 
 
 
-void Trie::addWord(const std::string& newWord){
+void Trie::addWord(const std::string& newWord) {
     int index = getIdx(newWord[0]);
     TrieNode* temp = this->root[index];
     if(!temp->_ltr){
@@ -41,7 +40,7 @@ void Trie::addWord(const std::string& newWord){
     temp->_terminal = true;
 }
 
-bool Trie::lookup(const std::string& word) const{
+bool Trie::lookup(const std::string& word) const {
     int index = getIdx(word[0]);
     TrieNode* temp = this->root[index];
     if(!temp->_ltr){
@@ -61,9 +60,21 @@ bool Trie::lookup(const std::string& word) const{
     return false;
 }
 
-//This function checks for how many words will start with a prefix and saves them in an array
-// of strings that use the prefix. We will use two different functions to grab how many words
-//have this prefix and we will call on a separate function to add each word to the resultList array
+void Trie::searchHelper(const std::string& prefix, std::string resultList[], TrieNode* node, int& count) const {
+    string word = prefix;
+    for (auto & i : node->_children) {
+        if (i != nullptr) {
+            word += i->_ltr;
+            if (i->_terminal) {
+                resultList[count++] = word;
+            }
+            searchHelper(word, resultList, i, count);
+            word.pop_back();
+        }
+
+    }
+}
+
 int Trie::beginsWith(const std::string& prefix, std::string resultList[]) const {
     int index = getIdx(prefix[0]);
     TrieNode* temp = this->root[index];
@@ -78,37 +89,13 @@ int Trie::beginsWith(const std::string& prefix, std::string resultList[]) const 
         if (temp->_terminal) {
             resultList[count++] = word;
         }
-        searchHelper(word, resultList, count, temp);
+        searchHelper(word, resultList, temp, count);
     }
     return count;
 }
 
-//This function will check for each word that has the same prefix identified. We save the prefix and
-//the current node into temporary variables so that we can modify them to grab each word. However once we
-//reach the end of the word with the prefix, we will add it to the resultList and call the function (recursion)
-//to check for any other words that go beyond the end of the word we orignally found. Once we save all the words
-//found with the prefix, we will end this loop, returning back to the original function beginsWith
-void Trie::searchHelper(const std::string& prefix, std::string resultList[], int& counter, TrieNode* tempNode) const
-{
-    string word = prefix;
-    TrieNode* pfx = tempNode;
-    for (int i = 0; i < 26; i++) {
-        if (pfx->_children[i] != nullptr) {
-            word += (i + 'a');
-            if (pfx->_children[i]->_terminal) {
-                resultList[counter++] = word;
-            }
-            pfx = pfx->_children[i];
-            searchHelper(word, resultList, counter, pfx);
-            word.pop_back();
-            pfx = tempNode;
-        }
 
-    }
-}
-
-void Trie::remove(TrieNode *tn)
-{
+void Trie::remove(TrieNode *tn) {
     if(tn == nullptr){
         return;
     }
@@ -127,8 +114,7 @@ void Trie::remove(TrieNode *tn)
     }
 }
 
-Trie::~Trie()
-{
+Trie::~Trie() {
     for (auto & i : root){
         remove(i);
     }
@@ -141,6 +127,5 @@ Trie::TrieNode *Trie::addTrieNode(const char ltr, TrieNode* parent) {
     }
     tn->_terminal = false;
     tn->_ltr = ltr;
-    tn->_suggested = false;
     return tn;
 }
