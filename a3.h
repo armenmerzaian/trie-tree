@@ -13,6 +13,7 @@ class Trie{
         TrieNode* _parent;
         bool _terminal;
 
+        //the parent reference is useful for stack tracing when debugging
         TrieNode(TrieNode* parent){
             _parent = parent;
         };
@@ -36,7 +37,7 @@ public:
 	bool lookup(const std::string& word) const;
 	int beginsWith(const std::string& prefix, std::string resultList[]) const;
 
-    void searchHelper(const std::string& prefix, std::string resultList[], TrieNode* node, int& count) const;
+    void searchHelper(const string& prefix, string resultList[], TrieNode* node, int& count) const;
     static TrieNode* addTrieNode(char ltr, TrieNode* parent);
     void remove(TrieNode *node);
 	~Trie();	

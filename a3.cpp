@@ -7,6 +7,10 @@ int getIdx(char ch) {
 
 Trie::Trie(){}
 
+// Overloaded constructor
+// The constructor is passed an array of words and the size of the array.
+// It initializes the Trie to hold all the words in wordlist by calling a function addWord
+// The Trie contains a root -> array of TrieNodes for each letter of the alphabet
 Trie::Trie(const std::string wordList[],int sz) {
 
     const string alphabet = "abcdefghijklmnopqrstuvwxyz";
@@ -17,13 +21,16 @@ Trie::Trie(const std::string wordList[],int sz) {
     }
 
     for(int i = 0; i < sz; i++){
-        string currWord = wordList[i];
-        addWord(currWord);
+        addWord(wordList[i]);
     }
 }
 
 
-
+// function addWord take a string reference, finds its starting place in the root of the Trie
+// then iteratively inserts each letter of the word as its own TrieNode
+// nesting down and adding each consecutive letter as a child of the previous letter in the word
+// when the word is complete, it flags the end of a word in that last letter's TrieNode
+// using the _terminal flag
 void Trie::addWord(const std::string& newWord) {
     int index = getIdx(newWord[0]);
     TrieNode* temp = this->root[index];
@@ -40,6 +47,11 @@ void Trie::addWord(const std::string& newWord) {
     temp->_terminal = true;
 }
 
+//function lookup returns true if word is in the Trie, false otherwise.
+// finds its starting point in the root of the Trie
+// then nests down matching each letter from the word to
+// one of the children in the TrieNode. If nesting fails, false is returned
+// signaling that the word does not exist
 bool Trie::lookup(const std::string& word) const {
     int index = getIdx(word[0]);
     TrieNode* temp = this->root[index];
@@ -60,7 +72,12 @@ bool Trie::lookup(const std::string& word) const {
     return false;
 }
 
-void Trie::searchHelper(const std::string& prefix, std::string resultList[], TrieNode* node, int& count) const {
+// recursive helper function for the beginsWith function returns void
+// returns references to the resultList and the count on return
+// recursively nests into each possible TrieNode child until it reaches
+// a _terminal == true flag indicating that a word is found.
+// when a word is found, it adds it to the resultList array of strings
+void Trie::searchHelper(const string& prefix, string resultList[], TrieNode* node, int& count) const {
     string word = prefix;
     for (auto & i : node->_children) {
         if (i != nullptr) {
@@ -75,6 +92,12 @@ void Trie::searchHelper(const std::string& prefix, std::string resultList[], Tri
     }
 }
 
+// function is passed a prefix. It passes back an alphabetical list of all words in the Trie that begin
+// with the given prefix through a reference to resultList.
+// Function returns number of words in the result list.
+// After iteratively searching for and finding the nested TrieNode matching
+// the end letter of the prefix string, calls on searchHelper to recursively
+// find every possible outcome.
 int Trie::beginsWith(const std::string& prefix, std::string resultList[]) const {
     int index = getIdx(prefix[0]);
     TrieNode* temp = this->root[index];
@@ -94,7 +117,9 @@ int Trie::beginsWith(const std::string& prefix, std::string resultList[]) const 
     return count;
 }
 
-
+// recursive function searches each child of a TrieNode
+// If the children are already empty, returns void,
+// If the children are not empty recursively deletes the TrieNodes
 void Trie::remove(TrieNode *tn) {
     if(tn == nullptr){
         return;
@@ -114,12 +139,19 @@ void Trie::remove(TrieNode *tn) {
     }
 }
 
+// destructor loops through each TrieNode child of the
+// Trie through the root and calls the recursive remove function
+// to determine if a child node needs to be released from memory
 Trie::~Trie() {
     for (auto & i : root){
         remove(i);
     }
 }
 
+//function is passed a character letter, along with a reference to a parent TrieNode
+//dynamically creates a TrieNode instance as a child of the parent TrieNode
+//sets empty properties for the child
+// returns a pointer to the newly created node
 Trie::TrieNode *Trie::addTrieNode(const char ltr, TrieNode* parent) {
     auto* tn = new TrieNode(parent);
     for (auto& i : tn->_children) {
