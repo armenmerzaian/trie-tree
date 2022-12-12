@@ -1,1 +1,8 @@
-[![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-f4981d0f882b2a3f0472912d15f9806d57e124e0fc890972558857b51b24a6f9.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=9532414)
+# Reflection
+
+## How efficient is the creation Trie vs your chosen data structures.
+
+## How good will that data structure be at the main look up tasks of a Trie(search and begins_with).
+
+## How can each of the chosen data structures support the two look up tasks (can you use the exist functionality or do you need to do something extra to what is typically returned?)
+
