@@ -36,7 +36,7 @@ const int numTests = 5;
 
 int main(int argc, char* argv[]){
     Timer createTimer;
-    FILE* fp=fopen("a3dictionary.txt","r");
+    FILE* fp = fopen("a3dictionary.txt","r");
     char curr[1000];              //used to read in words from text file
     std::string* keys = new std::string[numWords];
     for(int i=0;i<numWords;i++){
@@ -276,6 +276,7 @@ bool test5(std::string key[], int max, std::string& error){
             error = "Error 5a: return value from beginsWith() function was not correct";
             return false;
         }
+
         bool isSame=true;
         for(int j=0;isSame && j<result;j++){
             if(suggestList[j] != correctSuggestions[i][j]){
