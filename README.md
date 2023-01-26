@@ -1,3 +1,16 @@
+# Trie Tree Data Structure and Algorithms
+
+# Cached Doubly Linked List
+
+## Outcomes
+
+In this assignment I implemented:
+- a Trie data structure
+- algorithms for adding, complete word search, and auto complete word search
+
+## Credits
+In collaboration with [Jacky Dai](https://www.linkedin.com/in/jacky-dai-29620022b/)
+
 # Reflection
 
 The data structures I will discuss in the reflection are Binary Tree and Hash Tables.
